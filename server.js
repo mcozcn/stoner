@@ -214,6 +214,8 @@ export function createApp({
       const hero = typeof cardClass === 'string' ? catalog.heroFor(cardClass) : null;
       if (!hero) throw httpError(400, 'cardClass geçersiz');
       const clean = cleanCards(cards);
+      const unknown = Object.keys(clean).find((id) => !catalog.card(id));
+      if (unknown) throw httpError(400, `Bilinmeyen kart: ${unknown}`);
       return {
         code: encode({ format, heroes: [hero], cards: clean }),
         problems: validateDeck({ format, cardClass, cards: clean }, catalog, standardSets(catalog, decks)),

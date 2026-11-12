@@ -48,3 +48,10 @@ test('add, list and remove pasted decks without duplicates', () => {
   assert.equal(removePasted(store, d.id), false);
   assert.deepEqual(listPasted(store), []);
 });
+
+test('deckFromCode rejects Classic and Twist codes', () => {
+  for (const format of ['classic', 'twist']) {
+    const unsupported = encode({ format, heroes: [637], cards: { 101: 2 } });
+    assert.throws(() => deckFromCode(unsupported, catalog), /Yalnızca Standard ve Wild desteleri destekleniyor/);
+  }
+});

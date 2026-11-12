@@ -156,6 +156,12 @@ test('POST /api/deckstring encodes and validates', async () => {
     body: { format: 'standard', cardClass: 'MAGE', cards: { 101: -1 } },
   });
   assert.equal(bad.status, 400);
+  const unknown = await call('/api/deckstring', {
+    method: 'POST',
+    body: { format: 'standard', cardClass: 'MAGE', cards: { 101: 2, 99999: 1 } },
+  });
+  assert.equal(unknown.status, 400);
+  assert.equal(unknown.body.error, 'Bilinmeyen kart: 99999');
   const noClass = await call('/api/deckstring', {
     method: 'POST',
     body: { format: 'standard', cardClass: 'PRIEST', cards: { 101: 1 } },

@@ -17,6 +17,7 @@ function classOf(heroes, cards, catalog) {
 
 export function deckFromCode(input, catalog) {
   const { format, heroes, cards, sideboard } = decode(input);
+  if (format !== 'standard' && format !== 'wild') throw new Error('Yalnızca Standard ve Wild desteleri destekleniyor');
   const unknown = Object.keys(cards).filter((id) => !catalog.card(id));
   if (unknown.length) {
     throw new Error(`Deste kodunda bilinmeyen kart var (${unknown.join(', ')}). Önce Güncelle'ye basın.`);
