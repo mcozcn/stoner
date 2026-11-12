@@ -187,3 +187,12 @@ test('POST /api/update reports per-source results and refreshes the cache', asyn
   assert.match(body.collection.error, /sessionid/);
   assert.equal((await call('/api/state')).body.cardCount, 1000);
 });
+
+test('POST /api/update still answers 200 when config.local.json is malformed', async () => {
+  writeFileSync(join(root, 'config.local.json'), '{broken');
+  const { status, body } = await call('/api/update', { method: 'POST' });
+  assert.equal(status, 200);
+  assert.equal(body.cards.error, null);
+  assert.match(body.collection.error, /^config\.local\.json okunamadı/);
+  assert.match(body.decks.error, /^config\.local\.json okunamadı/);
+});

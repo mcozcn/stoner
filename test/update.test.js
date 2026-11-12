@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { readConfig } from '../src/config.js';
 import { createStore } from '../src/store.js';
 import { runUpdate } from '../src/update.js';
 import { rawCards, stubFetch } from './helpers.js';
@@ -44,4 +45,24 @@ test('all sources succeed', async () => {
   assert.equal(Object.values(status).every((s) => s.error === null), true);
   assert.deepEqual(store.read('collection'), { 1: 2 });
   assert.equal(store.read('decks').length, 2);
+});
+
+test('readConfig parses a file that starts with a UTF-8 BOM', () => {
+  const path = join(mkdtempSync(join(tmpdir(), 'stoner-')), 'config.local.json');
+  writeFileSync(path, '\uFEFF{"hsreplay":{"sessionid":"abc"}}');
+  assert.deepEqual(readConfig(path), { hsreplay: { sessionid: 'abc' } });
+});
+
+test('an unreadable config fails only the sources that need it', async () => {
+  const store = newStore();
+  const fetchImpl = stubFetch({ 'hearthstonejson.com': { body: rawCards(1000) } });
+  const configError = 'config.local.json okunamadı: bozuk';
+
+  const status = await runUpdate({ store, config: {}, configError, fetchImpl });
+
+  assert.equal(status.cards.error, null);
+  assert.equal(status.collection.error, configError);
+  assert.equal(status.decks.error, configError);
+  assert.equal(store.read('cards').length, 1000);
+  assert.equal(fetchImpl.calls.some((c) => c.url.includes('hsreplay.net')), false);
 });

@@ -146,7 +146,14 @@ export function createApp({
     },
 
     'POST /api/update': async () => {
-      const status = await runUpdate({ store, config: readConfig(configPath), fetchImpl });
+      let config = {};
+      let configError = null;
+      try {
+        config = readConfig(configPath);
+      } catch (err) {
+        configError = err.message;
+      }
+      const status = await runUpdate({ store, config, configError, fetchImpl });
       cache = null;
       return status;
     },
