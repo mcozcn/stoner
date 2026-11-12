@@ -2,7 +2,75 @@
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Stoner</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
-  <body></body>
+  <body>
+    <header>
+      <h1>Stoner</h1>
+      <button id="update" type="button">Güncelle</button>
+    </header>
+
+    <p id="notice" role="status" aria-live="polite"></p>
+
+    <main>
+      <section aria-labelledby="sources-h">
+        <h2 id="sources-h">Veri durumu</h2>
+        <ul id="sources"></ul>
+      </section>
+
+      <section aria-labelledby="filters-h">
+        <h2 id="filters-h">Filtreler</h2>
+        <form id="filters">
+          <label>
+            Format
+            <select name="format">
+              <option value="standard">Standard</option>
+              <option value="wild">Wild</option>
+            </select>
+          </label>
+          <label>
+            Sınıf
+            <select name="class">
+              <option value="">Tümü</option>
+            </select>
+          </label>
+          <label>
+            Eksik destelerde en fazla toz
+            <input name="maxDust" type="range" min="0" max="12000" step="400" value="12000" />
+            <output name="dustOut">sınırsız</output>
+          </label>
+        </form>
+      </section>
+
+      <section aria-labelledby="paste-h">
+        <h2 id="paste-h">Deste kodu ekle</h2>
+        <form id="paste">
+          <label for="code">Oyundan ya da bir siteden kopyaladığınız deste kodu</label>
+          <textarea id="code" name="code" rows="3" required></textarea>
+          <button type="submit">Ekle</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="decks-h">
+        <h2 id="decks-h">Öneriler</h2>
+        <div id="decks"></div>
+      </section>
+    </main>
+
+    <dialog id="swap" aria-labelledby="swap-h">
+      <h2 id="swap-h">Kart değiştir</h2>
+      <label>
+        Ara
+        <input id="swap-search" type="search" />
+      </label>
+      <ul id="swap-list"></ul>
+      <form method="dialog">
+        <button>Kapat</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
 </html>
