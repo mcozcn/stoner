@@ -66,6 +66,15 @@ test('a small non-core change with core information gives high confidence', () =
   assert.deepEqual(result.coreMissing, []);
 });
 
+test('an incomplete substitution is low confidence even with core information', () => {
+  const a1 = deck('a1', { 401: 2, 201: 1 }, { archetype: 'Axe Warrior', cardClass: 'WARRIOR' });
+  const a2 = deck('a2', { 401: 2, 101: 1 }, { archetype: 'Axe Warrior', cardClass: 'WARRIOR' });
+  const result = run(a1, [a1, a2], { 401: 2 });
+  assert.equal(result.complete, false);
+  assert.equal(result.confidence, 'low');
+  assert.deepEqual(result.coreMissing, []);
+});
+
 test('reports incomplete when nothing owned can fill the slot', () => {
   const w = deck('w', { 401: 2 }, { cardClass: 'WARRIOR' });
   const result = run(w, [w], {});

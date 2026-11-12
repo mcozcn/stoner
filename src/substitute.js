@@ -101,7 +101,8 @@ export function substitute(deck, missing, { catalog, owned, decks, standardSets 
     swaps,
     complete,
     cards,
-    confidence: confidenceLevel(swaps.length, coreMissing.length > 0, core !== null),
+    // An unfilled slot is a dropped copy the player cannot replace, so the deck is never high confidence.
+    confidence: complete ? confidenceLevel(swaps.length, coreMissing.length > 0, core !== null) : 'low',
     coreMissing,
   };
 }
