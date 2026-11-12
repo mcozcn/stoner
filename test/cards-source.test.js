@@ -23,6 +23,7 @@ test('slimCards keeps the needed fields and fills defaults', () => {
     mechanics: [],
     text: '',
     copyOf: 9,
+    runeCost: null,
   });
 });
 
@@ -47,4 +48,12 @@ test('fetchCards downloads and slims', async () => {
 
 test('fetchCards reports an HTTP failure', async () => {
   await assert.rejects(fetchCards(stubFetch({ 'hearthstonejson.com': { status: 503 } })), /503/);
+});
+
+test('slimCards keeps the rune cost of Death Knight cards', () => {
+  const runeCost = { blood: 1, frost: 0, unholy: 2 };
+  const [slim] = slimCards([{ dbfId: 5, id: 'X', name: 'N', rarity: 'RARE', set: 'S', type: 'MINION', runeCost }], {
+    minCount: 1,
+  });
+  assert.deepEqual(slim.runeCost, runeCost);
 });

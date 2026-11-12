@@ -95,3 +95,11 @@ test('writes the owned version of a card into the result', () => {
   // Only the free Core Fireball is owned; its Core dbfId (301) must be used, not the Legacy one.
   assert.deepEqual(result.cards, { 301: 1 });
 });
+
+test('a Death Knight swap never pushes the rune total above three', () => {
+  const d = deck('dk', { 601: 1, 605: 1 }, { cardClass: 'DEATHKNIGHT' });
+  // Frost Golem (3 cost minion) matches best but needs 2 frost runes on top of 2 blood.
+  const result = run(d, [d], { 601: 1, 602: 2, 603: 2 });
+  assert.deepEqual(result.swaps.map((s) => s.in), [603]);
+  assert.deepEqual(result.cards, { 601: 1, 603: 1 });
+});

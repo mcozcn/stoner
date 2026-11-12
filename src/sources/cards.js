@@ -19,6 +19,7 @@ export function slimCards(raw, { minCount = 1000 } = {}) {
       mechanics: c.mechanics ?? [],
       text: c.text ?? '',
       copyOf: c.countAsCopyOfDbfId ?? null,
+      runeCost: c.runeCost ?? null,
     }));
 }
 

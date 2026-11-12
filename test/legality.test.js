@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createCatalog } from '../src/catalog.js';
-import { playable, standardSets } from '../src/legality.js';
+import { playable, runeTotal, standardSets } from '../src/legality.js';
 import { validateDeck } from '../src/validate.js';
 import { CARDS, FULL_DECK_CARDS, deck } from './helpers.js';
 
@@ -51,4 +51,20 @@ test('validateDeck allows Wild-only cards in a Wild deck', () => {
   const cards = { ...FULL_DECK_CARDS, 101: 0, 203: 2 };
   delete cards[101];
   assert.deepEqual(validateDeck(mage(cards, 'wild'), catalog, sets), []);
+});
+
+test('runeTotal sums the highest requirement of each rune', () => {
+  const cards = (...ids) => ids.map((id) => catalog.card(id));
+  assert.equal(runeTotal([]), 0);
+  assert.equal(runeTotal(cards(101, 201)), 0);
+  assert.equal(runeTotal(cards(601, 603)), 2);
+  assert.equal(runeTotal(cards(601, 602)), 4);
+  assert.equal(runeTotal(cards(601, 602, 605)), 5);
+});
+
+test('validateDeck reports an exceeded rune limit', () => {
+  const dk = { format: 'standard', cardClass: 'DEATHKNIGHT', cards: { 601: 2, 602: 2 } };
+  assert.ok(validateDeck(dk, catalog, sets).includes('Rün sınırı aşıldı (en fazla 3)'));
+  const ok = { ...dk, cards: { 601: 2, 603: 2 } };
+  assert.equal(validateDeck(ok, catalog, sets).some((p) => /Rün/.test(p)), false);
 });

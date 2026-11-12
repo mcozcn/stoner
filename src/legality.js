@@ -21,3 +21,11 @@ export function playable(canon, { cardClass, format }, catalog, sets) {
   if (!card || card.set === 'HERO_SKINS') return false;
   return catalog.fitsClass(canon, cardClass) && inFormat(canon, format, catalog, sets);
 }
+
+export const MAX_RUNES = 3;
+const RUNES = ['blood', 'frost', 'unholy'];
+
+// A Death Knight deck may hold at most three runes: the sum of each rune's highest requirement.
+export function runeTotal(cards) {
+  return RUNES.reduce((sum, rune) => sum + Math.max(0, ...cards.map((c) => c.runeCost?.[rune] ?? 0)), 0);
+}

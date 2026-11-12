@@ -1,4 +1,4 @@
-import { inFormat } from './legality.js';
+import { MAX_RUNES, inFormat, runeTotal } from './legality.js';
 
 export function validateDeck({ format, cardClass, cards }, catalog, sets) {
   const problems = [];
@@ -21,5 +21,7 @@ export function validateDeck({ format, cardClass, cards }, catalog, sets) {
     if (!catalog.fitsClass(canon, cardClass)) problems.push(`${name}: bu sınıfta kullanılamaz`);
     if (!inFormat(canon, format, catalog, sets)) problems.push(`${name}: Standard'da geçerli değil`);
   }
+  const known = [...perCanon.keys()].map((canon) => catalog.card(canon));
+  if (runeTotal(known) > MAX_RUNES) problems.push(`Rün sınırı aşıldı (en fazla ${MAX_RUNES})`);
   return problems;
 }

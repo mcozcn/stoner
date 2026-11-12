@@ -14,6 +14,7 @@ export function card(dbfId, name, cardClass, cost, type, rarity, set, extra = {}
     mechanics: [],
     text: '',
     copyOf: null,
+    runeCost: null,
     ...extra,
   };
 }
@@ -37,6 +38,11 @@ export const CARDS = [
   ...Array.from({ length: 12 }, (_, i) =>
     card(500 + i, `Filler ${i}`, 'NEUTRAL', (i % 6) + 1, 'MINION', 'COMMON', 'SPACE'),
   ),
+  card(9, 'Arthas', 'DEATHKNIGHT', 0, 'HERO', 'FREE', 'HERO_SKINS', { id: 'HERO_11' }),
+  card(601, 'Blood Strike', 'DEATHKNIGHT', 2, 'SPELL', 'COMMON', 'SPACE', { runeCost: { blood: 2, frost: 0, unholy: 0 } }),
+  card(602, 'Frost Golem', 'DEATHKNIGHT', 3, 'MINION', 'COMMON', 'SPACE', { runeCost: { blood: 0, frost: 2, unholy: 0 } }),
+  card(603, 'Blood Ward', 'DEATHKNIGHT', 1, 'SPELL', 'COMMON', 'SPACE', { runeCost: { blood: 1, frost: 0, unholy: 0 } }),
+  card(605, 'Plague Ghoul', 'DEATHKNIGHT', 3, 'MINION', 'COMMON', 'SPACE', { runeCost: { blood: 0, frost: 0, unholy: 1 } }),
 ];
 
 // A valid 30-card Standard Mage list: 12 fillers x2 plus three Mage cards x2.

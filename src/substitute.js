@@ -1,4 +1,4 @@
-import { playable } from './legality.js';
+import { MAX_RUNES, playable, runeTotal } from './legality.js';
 
 export const CORE_SHARE = 0.9;
 
@@ -76,12 +76,16 @@ export function substitute(deck, missing, { catalog, owned, decks, standardSets 
     (canon) => !missingIds.has(canon) && playable(canon, deck, catalog, standardSets),
   );
   const swaps = [];
+  const runeLimited = deck.cardClass === 'DEATHKNIGHT';
+  // Cards that count toward the rune total: kept copies plus chosen substitutes.
+  const held = runeLimited ? Object.keys(cards).map((id) => catalog.card(id)) : [];
   let complete = true;
   for (const { dbfId: out, count } of missing) {
     const target = catalog.card(out);
     for (let i = 0; i < count; i += 1) {
       const ranked = pool
         .filter((canon) => owned.counts.get(canon) - (inDeck.get(canon) ?? 0) > 0)
+        .filter((canon) => !runeLimited || runeTotal([...held, catalog.card(canon)]) <= MAX_RUNES)
         .map((canon) => ({ dbfId: canon, score: score(catalog.card(canon), target, share) }))
         .sort((a, b) => b.score - a.score || a.dbfId - b.dbfId);
       if (!ranked.length) {
@@ -91,6 +95,7 @@ export function substitute(deck, missing, { catalog, owned, decks, standardSets 
       const pick = ranked[0].dbfId;
       const concrete = owned.concrete.get(pick) ?? pick;
       cards[concrete] = (cards[concrete] ?? 0) + 1;
+      if (runeLimited) held.push(catalog.card(pick));
       inDeck.set(pick, (inDeck.get(pick) ?? 0) + 1);
       swaps.push({ out, in: pick, alternatives: ranked.slice(0, 3).map((r) => r.dbfId) });
     }
