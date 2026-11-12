@@ -9,7 +9,7 @@ import { hsreplayGet } from '../src/sources/hsreplay-http.js';
 const MAX_KEYS = 8;
 const MAX_DEPTH = 3;
 
-// Describe structure only (key names and types), so the output is safe to share.
+// Describe structure only (key names of small objects, and types), so the output is safe to share.
 export function shape(value, depth = 0) {
   if (value === null) return 'null';
   if (Array.isArray(value)) {
@@ -18,9 +18,9 @@ export function shape(value, depth = 0) {
   if (typeof value !== 'object') return typeof value;
   if (depth >= MAX_DEPTH) return 'object';
   const keys = Object.keys(value);
-  const out = Object.fromEntries(keys.slice(0, MAX_KEYS).map((k) => [k, shape(value[k], depth + 1)]));
-  if (keys.length > MAX_KEYS) out['…'] = `+${keys.length - MAX_KEYS} anahtar`;
-  return out;
+  // A large object is a map keyed by data (such as card ids), so its keys are never printed.
+  if (keys.length > MAX_KEYS) return { [`<${keys.length} anahtar>`]: shape(value[keys[0]], depth + 1) };
+  return Object.fromEntries(keys.map((k) => [k, shape(value[k], depth + 1)]));
 }
 
 async function main() {
