@@ -99,3 +99,10 @@ test('fetchHsreplayDecks loads both formats', async () => {
   assert.deepEqual([...new Set(decks.map((d) => d.format))].sort(), ['standard', 'wild']);
   assert.equal(decks.length, 4);
 });
+
+test('a missing sessionid message warns about the hidden .txt extension', async () => {
+  await assert.rejects(
+    fetchCollection({}, stubFetch({})),
+    /config\.local\.json bulunamadı ya da içinde hsreplay\.sessionid yok \(dosya adı \.txt ile bitmemeli\)/,
+  );
+});

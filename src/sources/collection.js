@@ -29,7 +29,9 @@ export async function resolveAccount(config, fetchImpl = fetch) {
 }
 
 export async function fetchCollection(config, fetchImpl = fetch) {
-  if (!config?.hsreplay?.sessionid) throw new Error('config.local.json içinde hsreplay.sessionid yok');
+  if (!config?.hsreplay?.sessionid) {
+    throw new Error('config.local.json bulunamadı ya da içinde hsreplay.sessionid yok (dosya adı .txt ile bitmemeli)');
+  }
   const { region, accountLo } = await resolveAccount(config, fetchImpl);
   const query = new URLSearchParams({ region: String(region), account_lo: String(accountLo) });
   return parseCollection(await hsreplayGet(`/api/v1/collection/?${query}`, config, fetchImpl));

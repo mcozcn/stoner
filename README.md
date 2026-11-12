@@ -15,7 +15,7 @@ maçları siz oynarsınız.
 ## Kurulum
 
 1. Bu depoyu indirin (GitHub'da **Code → Download ZIP**) ve bir klasöre açın.
-2. Klasörde `config.local.json` adında bir dosya oluşturun:
+2. Klasörde `config.local.json` adında bir dosya oluşturun (ayrıntı aşağıda):
 
    ```json
    {
@@ -29,19 +29,27 @@ maçları siz oynarsınız.
    geliştirici araçlarını açın, **Application → Cookies → https://hsreplay.net** altında
    `sessionid` satırının değerini kopyalayıp yukarıdaki dosyaya yapıştırın.
 
+4. Dosyayı Not Defteri ile şöyle oluşturun: **Dosya → Farklı Kaydet**, **Kayıt türü: Tüm Dosyalar**,
+   dosya adı `config.local.json`, **Kodlama: UTF-8**. "Tüm Dosyalar" seçilmezse Not Defteri dosyayı
+   `config.local.json.txt` olarak kaydeder ve uygulama dosyayı bulamaz.
+5. Dosya adını doğru görmek için Gezgin'de **Görünüm → Göster → Dosya adı uzantıları** seçeneğini açın;
+   adın sonunda `.txt` görüyorsanız dosyayı yeniden adlandırıp o bölümü silin.
+
 Bu çerez hesabınıza giriş anahtarıdır: kimseyle paylaşmayın. Dosya yalnızca bilgisayarınızda durur,
 git'e girmez ve yalnızca hsreplay.net adresine gönderilir.
 
 ## İlk çalıştırma: bağlantı denetimi
 
-Bir komut istemi açıp klasöre gidin ve şunu çalıştırın:
+Klasörü Gezgin'de açın, adres çubuğuna `cmd` yazıp Enter'a basın (klasörde bir komut istemi açılır) ve
+şunu çalıştırın:
 
 ```
 node scripts/probe-hsreplay.js
 ```
 
-Her satırda `Ayrıştırma: OK` görüyorsanız her şey hazır. `BAŞARISIZ` görürseniz ekrandaki
-"Biçim" ve "Ayrıştırma" satırlarını geliştiriciye iletin (bu satırlar kişisel veri içermez).
+Koleksiyon ve deste denemelerinde `Ayrıştırma: OK ...` satırını, diğerlerinde bir "Biçim" bölümünü
+görüyorsanız her şey hazır. Herhangi bir yerde `BAŞARISIZ` görürseniz ekrandaki "Biçim" ve "Ayrıştırma"
+satırlarını geliştiriciye iletin (bu satırlar kişisel veri içermez).
 
 ## Kullanım
 
@@ -72,6 +80,8 @@ yapıştırabilirsiniz.
 |---|---|
 | "HSReplay oturumu reddetti" | Çerezin süresi dolmuş. Yeni `sessionid` değerini `config.local.json` dosyasına yazın. |
 | "HSReplay'e bağlanılamadı" | Ağınız hsreplay.net adresini engelliyor olabilir. Başka bir ağda deneyin. |
+| "config.local.json bulunamadı ya da içinde hsreplay.sessionid yok" | Dosya yok, yanlış klasörde ya da adı `config.local.json.txt`. Kurulum bölümündeki Not Defteri adımlarına bakın. |
+| "region ve accountLo yazın" | Yalnızca uygulama isterse gerekir. `region`: 1 Amerika, 2 Avrupa, 3 Asya. `accountLo`: HSReplay koleksiyon sayfasının adresindeki sayı. İkisini de `hsreplay` bölümüne ekleyin. |
 | "Port 4717 kullanımda" | Uygulama zaten açık. Tarayıcıda `http://127.0.0.1:4717` adresine gidin. |
 | Bir kaynak güncellenemedi | Diğerleri güncellenir; başarısız olan son indirilen veriyle çalışmaya devam eder. |
 
