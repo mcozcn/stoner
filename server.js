@@ -91,7 +91,7 @@ export function createApp({
       : { dbfId: Number(id), name: `Bilinmeyen kart (${id})`, cost: 0, rarity: null };
   };
 
-  function present(rec, catalog) {
+  function present(rec, catalog, sets) {
     const { deck, substitution } = rec;
     const substituted = rec.status === 'substituted';
     const finalCards = substituted ? substitution.cards : deck.cards;
@@ -110,6 +110,9 @@ export function createApp({
       lowData: rec.lowData,
       confidence: substituted ? substitution.confidence : null,
       stale: rec.unknown.length > 0,
+      // Decks that break the normal rules are shown with these problems instead of being hidden.
+      problems: validateDeck({ format: deck.format, cardClass: deck.cardClass, cards: finalCards }, catalog, sets),
+      sideboard: (deck.sideboard ?? []).length > 0,
       code:
         hero && FORMATS.includes(deck.format)
           ? encode({
@@ -172,11 +175,12 @@ export function createApp({
         recommendations.set(key, recommend({ catalog, collection, decks, filters: { format, cardClass } }));
       }
       const maxDust = maxDustRaw === null ? null : Number(maxDustRaw);
+      const sets = standardSets(catalog, decks);
       return recommendations
         .get(key)
         .filter((rec) => maxDust === null || rec.status !== 'missing' || rec.dust <= maxDust)
         .slice(0, MAX_RESULTS)
-        .map((rec) => present(rec, catalog));
+        .map((rec) => present(rec, catalog, sets));
     },
 
     'GET /api/owned': (url) => {

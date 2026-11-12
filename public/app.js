@@ -147,6 +147,17 @@ function deckCard(rec) {
   if (rec.stale) {
     children.push(el('p', { textContent: "Bu destede tanınmayan kart var; Güncelle'ye basın." }));
   }
+  if (rec.problems.length) {
+    children.push(el('p', { className: 'problems', textContent: `Doğrulanamadı: ${rec.problems.join(' · ')}` }));
+  }
+  if (rec.sideboard) {
+    children.push(
+      el('p', {
+        textContent:
+          'Bu destede yan deste var: yan deste kartlarına sahip olup olmadığınız denetlenmez; ikameli ya da elle değiştirilmiş kodda yan deste yer almaz.',
+      }),
+    );
+  }
   if (rec.missing.length) {
     const names = rec.missing.map((m) => `${m.name} ×${m.count}${m.core ? ' (çekirdek kart)' : ''}`);
     children.push(el('p', { textContent: `Eksik: ${names.join(', ')}` }));

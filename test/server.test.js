@@ -89,6 +89,13 @@ test('GET /api/recommendations returns presented decks in order', async () => {
   assert.equal(body[0].confidence, null);
 });
 
+test('presented decks carry validation problems and the sideboard flag', async () => {
+  const { body } = await call('/api/recommendations?format=standard');
+  const b1 = body.find((r) => r.id === 'hsreplay:standard:b1');
+  assert.ok(b1.problems.some((p) => /30 kart/.test(p)));
+  assert.equal(b1.sideboard, false);
+});
+
 test('GET /api/recommendations applies filters and rejects bad ones', async () => {
   assert.equal((await call('/api/recommendations?format=standard&class=WARRIOR')).body.length, 1);
   assert.equal((await call('/api/recommendations?format=standard&maxDust=10')).body.length, 2);
