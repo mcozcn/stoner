@@ -49,12 +49,17 @@ async function loadState() {
   select.value = state.classes.includes(current) ? current : '';
 }
 
+let latestLoad = 0;
+
 async function loadDecks() {
+  const load = (latestLoad += 1);
   const fields = $('#filters').elements;
   const query = new URLSearchParams({ format: fields.format.value });
   if (fields.class.value) query.set('class', fields.class.value);
   if (Number(fields.maxDust.value) < MAX_DUST) query.set('maxDust', fields.maxDust.value);
   const recs = await api(`/api/recommendations?${query}`);
+  // A slower, older response must not replace the result of a newer request.
+  if (load !== latestLoad) return;
   $('#decks').replaceChildren(
     ...(recs.length
       ? recs.map(deckCard)
@@ -217,10 +222,15 @@ async function openSwap(rec, card, apply) {
   dialog.showModal();
 }
 
-$('#filters').addEventListener('input', () => {
+$('#filters').addEventListener('input', (event) => {
   const fields = $('#filters').elements;
   fields.dustOut.value = Number(fields.maxDust.value) < MAX_DUST ? `${fields.maxDust.value} toz` : 'sınırsız';
-  loadDecks().catch((err) => notify(err.message));
+  // The dust slider only requests once it is released (see the change handler).
+  if (event.target !== fields.maxDust) loadDecks().catch((err) => notify(err.message));
+});
+
+$('#filters').addEventListener('change', (event) => {
+  if (event.target === $('#filters').elements.maxDust) loadDecks().catch((err) => notify(err.message));
 });
 
 $('#update').addEventListener('click', async () => {

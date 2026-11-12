@@ -24,6 +24,7 @@ function compare(a, b) {
 export function recommend({ catalog, collection, decks, filters = {} }) {
   const owned = buildOwned(catalog, collection);
   const sets = standardSets(catalog, decks);
+  const memo = { popularity: new Map(), core: new Map() };
   const results = [];
   for (const deck of decks) {
     if (filters.format && deck.format !== filters.format) continue;
@@ -36,7 +37,7 @@ export function recommend({ catalog, collection, decks, filters = {} }) {
     if (!missing.length && !unknown.length) {
       status = 'buildable';
     } else if (!unknown.length) {
-      substitution = substitute(deck, missing, { catalog, owned, decks, standardSets: sets });
+      substitution = substitute(deck, missing, { catalog, owned, decks, standardSets: sets, memo });
       if (substitution.complete && substitution.confidence !== 'low') status = 'substituted';
     }
     if (status === 'missing' && filters.maxDust != null && dust > filters.maxDust) continue;

@@ -78,6 +78,7 @@ export function createApp({
         catalog: createCatalog(cards),
         collection: store.read('collection', {}),
         decks: [...store.read('decks', []), ...listPasted(store)],
+        recommendations: new Map(),
       };
     }
     return cache;
@@ -157,9 +158,16 @@ export function createApp({
       if (format && !FORMATS.includes(format)) throw httpError(400, 'format geçersiz');
       if (cardClass && !/^[A-Z]+$/.test(cardClass)) throw httpError(400, 'class geçersiz');
       if (maxDustRaw !== null && !/^\d+$/.test(maxDustRaw)) throw httpError(400, 'maxDust geçersiz');
-      const { catalog, collection, decks } = state();
-      const filters = { format, cardClass, maxDust: maxDustRaw === null ? null : Number(maxDustRaw) };
-      return recommend({ catalog, collection, decks, filters })
+      const { catalog, collection, decks, recommendations } = state();
+      // The expensive ranking is cached per format and class; the dust limit is applied afterwards.
+      const key = `${format}|${cardClass}`;
+      if (!recommendations.has(key)) {
+        recommendations.set(key, recommend({ catalog, collection, decks, filters: { format, cardClass } }));
+      }
+      const maxDust = maxDustRaw === null ? null : Number(maxDustRaw);
+      return recommendations
+        .get(key)
+        .filter((rec) => maxDust === null || rec.status !== 'missing' || rec.dust <= maxDust)
         .slice(0, MAX_RESULTS)
         .map((rec) => present(rec, catalog));
     },

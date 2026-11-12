@@ -53,9 +53,20 @@ function score(candidate, target, share) {
   );
 }
 
-export function substitute(deck, missing, { catalog, owned, decks, standardSets }) {
-  const core = coreCards(deck, decks, catalog);
-  const share = popularity(deck, decks, catalog);
+// With a memo ({ popularity: Map, core: Map }) the per-group analysis is computed once and reused across decks.
+function remember(cache, key, compute) {
+  if (!cache) return compute();
+  if (!cache.has(key)) cache.set(key, compute());
+  return cache.get(key);
+}
+
+export function substitute(deck, missing, { catalog, owned, decks, standardSets, memo }) {
+  const core = remember(memo?.core, `${deck.archetype}|${deck.cardClass}|${deck.format}`, () =>
+    coreCards(deck, decks, catalog),
+  );
+  const share = remember(memo?.popularity, `${deck.cardClass}|${deck.format}`, () =>
+    popularity(deck, decks, catalog),
+  );
   const missingIds = new Set(missing.map((m) => m.dbfId));
 
   // Start from the deck minus the copies the player does not have.

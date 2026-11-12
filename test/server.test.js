@@ -96,6 +96,14 @@ test('GET /api/recommendations applies filters and rejects bad ones', async () =
   assert.equal((await call('/api/recommendations?maxDust=abc')).status, 400);
 });
 
+test('repeated recommendation requests return the same list and maxDust still filters', async () => {
+  const path = '/api/recommendations?format=standard';
+  const first = (await call(path)).body;
+  assert.deepEqual((await call(path)).body, first);
+  assert.equal((await call(`${path}&maxDust=10`)).body.length, first.length - 1);
+  assert.deepEqual((await call(path)).body, first);
+});
+
 test('GET /api/owned lists owned playable cards', async () => {
   const { body } = await call('/api/owned?class=MAGE&format=standard');
   assert.deepEqual(
