@@ -46,3 +46,9 @@ test('analyzeDeck reports cards missing from the card data', () => {
   assert.deepEqual(result.unknown, [999]);
   assert.deepEqual(result.missing, []);
 });
+
+test('buildOwned prefers the Core id when the collection also lists the Wild-only printing', () => {
+  const owned = buildOwned(catalog, { 302: 1, 301: 1 });
+  assert.equal(owned.concrete.get(302), 301);
+  assert.equal(buildOwned(catalog, { 302: 2 }).concrete.get(302), 301);
+});

@@ -14,7 +14,8 @@ export function buildOwned(catalog, collection) {
     if (catalog.isFree(canon)) {
       // Core cards are granted to every account.
       counts.set(canon, max);
-      if (!concrete.has(canon)) concrete.set(canon, catalog.group(canon).find((c) => c.set === 'CORE').dbfId);
+      // Always the Core printing, so Standard codes never carry the Wild-only id.
+      concrete.set(canon, catalog.group(canon).find((c) => c.set === 'CORE').dbfId);
     } else if (counts.has(canon)) {
       counts.set(canon, Math.min(counts.get(canon), max));
     }
