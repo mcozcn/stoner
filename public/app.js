@@ -120,6 +120,8 @@ function deckCard(rec) {
     if (to) to.count += 1;
     else edit.set(String(into.dbfId), { dbfId: into.dbfId, name: into.name, cost: into.cost, count: 1 });
     renderList();
+    // The old code no longer matches the list, so it stays disabled until a new one arrives.
+    copy.disabled = true;
     const cards = Object.fromEntries([...edit].map(([id, c]) => [id, c.count]));
     try {
       const result = await api('/api/deckstring', {
@@ -131,7 +133,7 @@ function deckCard(rec) {
       problems.textContent = result.problems.length ? `Uyarı: ${result.problems.join(' · ')}` : '';
       notify(`${rec.name}: ${out.name} yerine ${into.name} kondu. Yeni kod hazır.`);
     } catch (err) {
-      notify(err.message);
+      notify(`${err.message} — kod üretilemedi, kopyalama kapatıldı`);
     }
   }
 
